@@ -1,4 +1,4 @@
-import { ChangeEvent, HTMLInputTypeAttribute } from "react";
+import { ChangeEvent, HTMLInputTypeAttribute, useEffect } from "react";
 import { useRef, useCallback } from "react";
 import s from "./Input.style.module.css";
 
@@ -14,9 +14,10 @@ interface props {
 
 export function Input(props: props) {
   const symbolRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { type, handler, value, symbol, symbolPos, name, label } = props;
 
+  // Check position selected for the Symbol and apply the appropriate css
   const symbolPosHandler = useCallback(() => {
     if (symbolPos) {
       return symbolPos === "right" ? s.symbol_right : s.symbol;
@@ -25,18 +26,20 @@ export function Input(props: props) {
     }
   }, [symbolPos]);
 
+  // Change background color when focused
   const symbolFocusHandler = () => {
     if (symbolRef.current) {
       symbolRef.current.classList.add(s.symbol_focus);
     }
   };
-
+  // Remove background color when out of focus
   const symbolRemoveFocus = () => {
     if (symbolRef.current) {
       symbolRef.current.classList.remove(s.symbol_focus);
     }
   };
 
+  // Limit length in the input
   const limitInputSize = (
     event: ChangeEvent<HTMLInputElement>,
     callback: (event: ChangeEvent<HTMLInputElement>) => void
@@ -44,6 +47,17 @@ export function Input(props: props) {
     const { value } = event.target;
     if (value.length >= 0 && value.length <= 9) callback(event);
   };
+
+  useEffect(() => {
+    // Adjust padding accordingly to symbol width
+    const reactiveInputPadding = () => {
+      if (symbolRef.current && inputRef.current) {
+        const symWidth = symbolRef.current.offsetWidth;
+        inputRef.current.style.paddingLeft = `${symWidth + 5}px`;
+      }
+    };
+    reactiveInputPadding();
+  });
 
   return (
     <div
