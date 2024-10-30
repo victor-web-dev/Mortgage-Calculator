@@ -37,6 +37,14 @@ export function Input(props: props) {
     }
   };
 
+  const limitInputSize = (
+    event: ChangeEvent<HTMLInputElement>,
+    callback: (event: ChangeEvent<HTMLInputElement>) => void
+  ) => {
+    const { value } = event.target;
+    if (value.length >= 0 && value.length <= 9) callback(event);
+  };
+
   return (
     <div
       className={s.container}
@@ -60,7 +68,7 @@ export function Input(props: props) {
             className={s.input}
             type={type}
             name={name}
-            onChange={handler}
+            onChange={(event) => limitInputSize(event, handler)}
             value={value}
           />
         </div>
