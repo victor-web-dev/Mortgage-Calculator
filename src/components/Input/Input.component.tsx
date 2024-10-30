@@ -10,12 +10,13 @@ interface props {
   symbol: string;
   symbolPos?: "right" | "left";
   label?: string;
+  error?: boolean;
 }
 
 export function Input(props: props) {
   const symbolRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { type, handler, value, symbol, symbolPos, name, label } = props;
+  const { type, handler, value, symbol, symbolPos, name, label, error } = props;
 
   // Check position selected for the Symbol and apply the appropriate css
   const symbolPosHandler = useCallback(() => {
@@ -69,17 +70,21 @@ export function Input(props: props) {
         ""
       ) : (
         <div className={s.label_container}>
-          <label>{label}</label>
+          <label aria-label={label}>{label}</label>
         </div>
       )}
       <div className={s.input_container}>
-        <div ref={symbolRef} className={symbolPosHandler()}>
+        <div
+          ref={symbolRef}
+          className={`${symbolPosHandler()} ${error && s.error_symbol}`}
+          aria-label={symbol}
+        >
           {symbol}
         </div>
-        <div>
+        <div aria-label="input area">
           <input
             ref={inputRef}
-            className={s.input}
+            className={`${s.input} ${error && s.input_error}`}
             type={type}
             name={name}
             onChange={(event) => limitInputSize(event, handler)}
@@ -87,6 +92,11 @@ export function Input(props: props) {
           />
         </div>
       </div>
+      {error && (
+        <div className={s.error_message}>
+          <p>This field is required</p>
+        </div>
+      )}
     </div>
   );
 }
