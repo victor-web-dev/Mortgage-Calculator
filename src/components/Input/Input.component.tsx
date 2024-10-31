@@ -54,7 +54,8 @@ export function Input(props: props) {
     const reactiveInputPadding = () => {
       if (symbolRef.current && inputRef.current) {
         const symWidth = symbolRef.current.offsetWidth;
-        inputRef.current.style.paddingLeft = `${symWidth + 5}px`;
+        if (symbolPos != "right")
+          return (inputRef.current.style.paddingLeft = `${symWidth + 5}px`);
       }
     };
     reactiveInputPadding();
